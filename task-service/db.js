@@ -1,9 +1,6 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// DEBUG: Cek apakah .env terbaca (tanpa melihat isi password)
-console.log("DB password loaded? :", process.env.DB_PASSWORD ? "Yes (length: " + process.env.DB_PASSWORD.length + ")" : "No!");
-
 const pool = new Pool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
