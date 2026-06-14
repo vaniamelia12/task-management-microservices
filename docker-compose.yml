@@ -1,0 +1,144 @@
+version: '3.8'
+
+services:
+  # ==================== DATABASES ====================
+  
+  user-db:
+    image: postgres:15
+    container_name: user_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: user_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - user_data:/var/lib/postgresql/data
+    networks:
+      - task-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  task-db:
+    image: postgres:15
+    container_name: task_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: task_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - task_data:/var/lib/postgresql/data
+    networks:
+      - task-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  notif-db:
+    image: postgres:15
+    container_name: notif_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: notif_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - notif_data:/var/lib/postgresql/data
+    networks:
+      - task-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ==================== SERVICES ====================
+
+  user-service:
+    build: ./user-service
+    container_name: user_service
+    environment:
+      PORT: 3001
+      DB_HOST: user-db
+      DB_PORT: 5432
+      DB_NAME: user_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: rahasia-super-rahasia-docker
+    ports:
+      - "3010:3001"
+    depends_on:
+      user-db:
+        condition: service_healthy
+    networks:
+      - task-network
+
+  task-service:
+    build: ./task-service
+    container_name: task_service
+    environment:
+      PORT: 3002
+      DB_HOST: task-db
+      DB_PORT: 5432
+      DB_NAME: task_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "3002:3002"
+    depends_on:
+      task-db:
+        condition: service_healthy
+    networks:
+      - task-network
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification_service
+    environment:
+      PORT: 3003
+      DB_HOST: notif-db
+      DB_PORT: 5432
+      DB_NAME: notif_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "3003:3003"
+    depends_on:
+      notif-db:
+        condition: service_healthy
+    networks:
+      - task-network
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api_gateway
+    environment:
+      PORT: 3000
+      USER_SERVICE_URL: http://user-service:3001
+      TASK_SERVICE_URL: http://task-service:3002
+      NOTIF_SERVICE_URL: http://notification-service:3003
+    ports:
+      - "3011:3000"
+    depends_on:
+      - user-service
+      - task-service
+      - notification-service
+    networks:
+      - task-network
+
+networks:
+  task-network:
+    driver: bridge
+
+volumes:
+  user_data:
+  task_data:
+  notif_data:

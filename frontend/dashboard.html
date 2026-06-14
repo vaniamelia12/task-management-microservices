@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - TaskFlow</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">📋 TaskFlow</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-tab="overview">
+                <span class="nav-icon">📊</span>
+                <span>Overview</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="my-tasks">
+                <span class="nav-icon">✅</span>
+                <span>Tugas Saya</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="created-tasks">
+                <span class="nav-icon">📝</span>
+                <span>Tugas Saya Buat</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="users">
+                <span class="nav-icon">👥</span>
+                <span>Semua User</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="calendar">
+                <span class="nav-icon">📅</span>
+                <span>Kalender</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="logoutBtn" class="logout-btn-sidebar">
+                <span class="nav-icon">🚪</span>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="welcome-text">
+                <h2>Selamat Datang, <span id="userName"></span>!</h2>
+                <p>Senang melihat Anda kembali 👋</p>
+            </div>
+            <div class="user-info">
+                <div class="avatar">👤</div>
+            </div>
+        </header>
+
+        <!-- Tab: Overview -->
+        <div id="overview" class="tab-pane active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📋</div>
+                    <div class="stat-info">
+                        <h3 id="totalTasks">0</h3>
+                        <p>Total Tugas</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon yellow">⏳</div>
+                    <div class="stat-info">
+                        <h3 id="pendingTasks">0</h3>
+                        <p>Pending</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">✅</div>
+                    <div class="stat-info">
+                        <h3 id="doneTasks">0</h3>
+                        <p>Selesai</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">👥</div>
+                    <div class="stat-info">
+                        <h3 id="totalUsers">0</h3>
+                        <p>Total User</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-tasks">
+                <div class="section-title">
+                    <h3>Tugas Terbaru</h3>
+                    <a href="#" class="view-all" data-tab="my-tasks">Lihat Semua →</a>
+                </div>
+                <div id="recentTasksList"></div>
+            </div>
+        </div>
+
+        <!-- Tab: My Tasks -->
+        <div id="my-tasks" class="tab-pane">
+            <div class="section-title">
+                <h3>📌 Tugas yang Diberikan ke Saya</h3>
+            </div>
+            <div id="myTasksList" class="tasks-grid"></div>
+        </div>
+
+        <!-- Tab: Created Tasks -->
+        <div id="created-tasks" class="tab-pane">
+            <div class="create-task-card">
+                <h3>➕ Buat Tugas Baru</h3>
+                <form id="taskForm">
+                    <input type="text" id="taskTitle" placeholder="Judul Tugas" required>
+                    <textarea id="taskDesc" placeholder="Deskripsi Tugas (opsional)"></textarea>
+                    
+                    <!-- TAMBAHAN INPUT DEADLINE -->
+                    <input type="datetime-local" id="taskDeadline">
+                    
+                    <select id="assignedTo">
+                        <option value="">-- Assign ke User (opsional) --</option>
+                    </select>
+                    <button type="submit" class="btn-primary">Buat Tugas</button>
+                </form>
+            </div>
+            <div class="section-title">
+                <h3>📋 Tugas yang Saya Buat</h3>
+            </div>
+            <div id="createdTasksList" class="tasks-grid"></div>
+        </div>
+
+        <!-- Tab: Users -->
+        <div id="users" class="tab-pane">
+            <div class="section-title">
+                <h3>👥 Semua Pengguna</h3>
+            </div>
+            <div id="usersList" class="users-grid"></div>
+        </div>
+
+        <!-- Tab: Calendar -->
+        <div id="calendar" class="tab-pane">
+            <div class="section-title">
+                <h3>📅 Kalender Tugas</h3>
+            </div>
+            <div id="calendarView"></div>
+        </div>
+    </main>
+
+    <!-- Modal Edit -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>✏️ Edit Tugas</h3>
+            <form id="editForm">
+                <input type="text" id="editTitle" placeholder="Judul Tugas" required>
+                <textarea id="editDesc" placeholder="Deskripsi Tugas"></textarea>
+                <select id="editStatus">
+                    <option value="pending">⏳ Pending</option>
+                    <option value="done">✅ Selesai</option>
+                </select>
+                <select id="editAssignedTo">
+                    <option value="">-- Pilih User --</option>
+                </select>
+                <!-- TAMBAHAN INPUT DEADLINE DI MODAL EDIT -->
+                <input type="datetime-local" id="editDeadline">
+                <button type="submit" class="btn-primary">Simpan Perubahan</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TaskFlow</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <span class="logo">📋 TaskFlow</span>
+                <h2>Selamat Datang Kembali</h2>
+                <p>Login untuk mengakses dashboard Anda</p>
+            </div>
+            <div id="message" class="message"></div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="masukkan@email.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Login</button>
+            </form>
+            <p class="auth-footer">Belum punya akun? <a href="register.html">Daftar Sekarang</a></p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

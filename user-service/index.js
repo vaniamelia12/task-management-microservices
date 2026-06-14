@@ -15,6 +15,11 @@ app.get('/health', (req, res) => {
     res.json({ status: 'User Service running', port: PORT });
 });
 
-app.listen(PORT, () => {
-    console.log(`User Service running on port ${PORT}`);
-});
+// Hanya jalankan server jika bukan dalam mode test
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`User Service running on port ${PORT}`);
+    });
+}
+
+module.exports = app;
